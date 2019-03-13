@@ -3,13 +3,13 @@
 Reference paper: [U-Net: Convolutional Networks for Biomedical Image Segmentation](https://arxiv.org/pdf/1505.04597v1.pdf)
 
 
-A brief UNet ***tensorflow*** implementation. It can work well on our dataset, see images below. If data augmentation and more strategies,
+A brief UNet ***tensorflow*** implementation. It can work well on our dataset, see images below. If data augmentation and more strategies are added,
 the performance will be better.
 
 ![test.png](./test.png)
 
 
-+ You just need to config the **config.py** to fit your own datast, see [dataset](#dataset). When the configuration is finished, you just to run and test.
++ You just need to config the **config.py** to fit your own datast, see [Dataset](#dataset). When the configuration is finished, you just to run and test.
 + The code will be updated with namescope, tfrecord, and more summaries.
 
     
