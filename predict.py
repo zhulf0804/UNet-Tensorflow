@@ -10,7 +10,7 @@ from PIL import Image
 
 import config
 import datasets
-import networks
+import networks.unet
 
 batch_size = config.batch_size
 img_size = config.img_size
@@ -38,6 +38,7 @@ data = datasets.read_data_sets(img_path, anno_path, img_size, mode='trainval')
 
 x = tf.placeholder(tf.float32, shape=[None, None, None, num_channels], name='x')
 y_pred = networks.unet.create_unet(x, train=False)
+y_pred = tf.argmax(y_pred, axis = 3, name="y_pred")
 
 sess = tf.Session()
 sess.run(tf.global_variables_initializer())
@@ -58,13 +59,12 @@ def predict(total_num):
 
         results *= 60  # for visualization
 
-        for j in range(batch_size):
-            img = results[j, :, :]
-            img = img.astype(np.uint8)
-            img = Image.fromarray(img)
-            img_name = os.path.join(saved_path, os.path.basename(img_names_batch[j]))
-            print(img_name)
-            img.save(img_name)
+        img = results[0, :, :]
+        img = img.astype(np.uint8)
+        img = Image.fromarray(img)
+        img_name = os.path.join(saved_path, os.path.basename(img_names_batch[0]))
+        print(img_name)
+        img.save(img_name)
 
 
 
