@@ -32,13 +32,17 @@ def pool_layer(input, padding='SAME'):
                           strides=[1, 2, 2, 1],
                           padding=padding)
 
-def un_conv(input, num_input_channels, conv_filter_size, num_filters, feature_map_size, padding='SAME',relu=True):
+def un_conv(input, num_input_channels, conv_filter_size, num_filters, feature_map_size, train=True, padding='SAME',relu=True):
 
 
     weights = create_weights(shape=[conv_filter_size, conv_filter_size, num_filters, num_input_channels])
     biases = create_biases(num_filters)
+    if train:
+        batch_size_0 = batch_size
+    else:
+        batch_size_0 = 1
     layer = tf.nn.conv2d_transpose(value=input, filter=weights,
-                                   output_shape=[batch_size, feature_map_size, feature_map_size, num_filters],
+                                   output_shape=[batch_size_0, feature_map_size, feature_map_size, num_filters],
                                    strides=[1, 2, 2, 1],
                                    padding=padding)
     layer += biases
@@ -48,7 +52,10 @@ def un_conv(input, num_input_channels, conv_filter_size, num_filters, feature_ma
     return layer
 
 
-def create_unet(input):
+def create_unet(input, train=True):
+
+    # train is used for un_conv, to determine the batch size
+
     conv1 = conv_layer(input, 3, 3, 64)
     conv2 = conv_layer(conv1, 64, 3, 64)
     pool2 = pool_layer(conv2)
@@ -65,25 +72,25 @@ def create_unet(input):
     conv9 = conv_layer(pool8, 512, 3, 1024)
     conv10 = conv_layer(conv9, 1024, 3, 1024)
 
-    conv11 = un_conv(conv10, 1024, 2, 512, img_size // 8)
+    conv11 = un_conv(conv10, 1024, 2, 512, img_size // 8, train)
     merge11 = tf.concat(values=[conv8, conv11], axis = -1)
 
     conv12 = conv_layer(merge11, 1024, 3, 512)
     conv13 = conv_layer(conv12, 512, 3, 512)
 
-    conv14 = un_conv(conv13, 512, 2, 256, img_size // 4)
+    conv14 = un_conv(conv13, 512, 2, 256, img_size // 4, train)
     merge14 = tf.concat([conv6, conv14], axis=-1)
 
     conv15 = conv_layer(merge14, 512, 3, 256)
     conv16 = conv_layer(conv15, 256, 3, 256)
 
-    conv17 = un_conv(conv16, 256, 2, 128, img_size // 2)
+    conv17 = un_conv(conv16, 256, 2, 128, img_size // 2, train)
     merge17 = tf.concat([conv17, conv4], axis=-1)
 
     conv18 = conv_layer(merge17, 256, 3, 128)
     conv19 = conv_layer(conv18, 128, 3, 128)
 
-    conv20 = un_conv(conv19, 128, 2, 64, img_size)
+    conv20 = un_conv(conv19, 128, 2, 64, img_size, train)
     merge20 = tf.concat([conv20, conv2], axis=-1)
 
     conv21 = conv_layer(merge20, 128, 3, 64)
@@ -95,8 +102,8 @@ def create_unet(input):
 if __name__ == '__main__':
     oldtime = datetime.datetime.now()
     for i in range(16):
-        input = tf.constant(0.6, shape=[4, 512, 512, 3])
-        y = create_unet(input)
+        input = tf.constant(0.6, shape=[1, 512, 512, 3])
+        y = create_unet(input, train=False)
         #print(y)
     newtime = datetime.datetime.now()
 

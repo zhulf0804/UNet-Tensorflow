@@ -93,7 +93,7 @@ x = tf.placeholder(tf.float32, shape=[None, None, None, num_channels], name='x')
 #y_true = tf.placeholder(tf.float32, shape=[None, img_size, img_size, classes], name='y_true')  # how to transform anno to 4-dimension image
 y_true = tf.placeholder(tf.int32, shape=[None, None, None], name='y_true')  # Sparse representation
 
-# y_pred = networks.unet_0.create_unet(x)
+
 y_pred = networks.unet.create_unet(x)
 
 if weighted == "yes":

@@ -10,6 +10,7 @@ from PIL import Image
 
 import config
 import datasets
+import networks
 
 batch_size = config.batch_size
 img_size = config.img_size
@@ -35,20 +36,15 @@ os.mkdir(saved_path)
 
 data = datasets.read_data_sets(img_path, anno_path, img_size, mode='trainval')
 
+x = tf.placeholder(tf.float32, shape=[None, None, None, num_channels], name='x')
+y_pred = networks.unet.create_unet(x, train=False)
 
 sess = tf.Session()
-
-saver = tf.train.import_meta_graph(os.path.join(data_path, 'model/segmentation.ckpt-'+ str(max_steps) + '.meta'))  ##获取
+sess.run(tf.global_variables_initializer())
+# saver = tf.train.import_meta_graph(os.path.join(data_path, 'model/segmentation.ckpt-'+ str(max_steps) + '.meta'))  ##获取
+saver = tf.train.Saver()
 saver.restore(sess, os.path.join(data_path, 'model/segmentation.ckpt-' + str(max_steps)))
 
-graph = tf.get_default_graph()
-
-##验证集效果不好,注意keep_prob，在测试时设置为1
-
-y_pred = graph.get_tensor_by_name("y_pred:0")
-x = graph.get_tensor_by_name("x:0")
-y_true = graph.get_tensor_by_name("y_true:0")
-y_test_images = np.zeros((1, 2))  #np.zeros
 
 def predict(total_num):
     for i in range(total_num):
@@ -64,6 +60,7 @@ def predict(total_num):
 
         for j in range(batch_size):
             img = results[j, :, :]
+            img = img.astype(np.uint8)
             img = Image.fromarray(img)
             img_name = os.path.join(saved_path, os.path.basename(img_names_batch[j]))
             print(img_name)
@@ -73,7 +70,7 @@ def predict(total_num):
 
 if __name__ == '__main__':
     trainval_filelist = os.path.join(data_path, trainval_list_file)
-    f = open(trainval_list_file, 'r')
+    f = open(trainval_filelist, 'r')
     lines = f.readlines()
     predict(len(lines))
 

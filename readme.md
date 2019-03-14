@@ -9,7 +9,7 @@ the performance will be better.
 ![test.png](./test.png)
 
 
-+ You just need to config the **config.py** to fit your own datast, see [Dataset](#dataset). When the configuration is finished, you just to run and test.
++ You just need to config the **config.py** to fit your own datast, see [Dataset](#dataset). When the configuration is finished, you can just run and test the model.
 + The code will be updated with namescope, tfrecord, and more summaries.
 
     

@@ -7,7 +7,7 @@ FlAGS = flags.FLAGS
 
 flags.DEFINE_string('data_path', './dataset/my_dataset', 'the directory of the datasets')
 flags.DEFINE_string('img_dir_name', 'images', 'the directory of the raw images')
-flags.DEFINE_string('annotation_dir_name', 'annos', 'the directory of the annotation images')
+flags.DEFINE_string('annotation_dir_name', 'annosRaw', 'the directory of the annotation images')
 flags.DEFINE_string('train_list_file', 'train.txt', 'the .txt file to save the training images filename') # one line one name, not including the suffix name
 flags.DEFINE_string('trainval_list_file', 'trainval.txt', 'the .txt file to save the training and val images filename') # one line one name, not including the suffix name
 flags.DEFINE_string('suffix_name', '.png', 'the suffix name of training images') # one line one name, not including the suffix name
