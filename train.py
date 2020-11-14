@@ -7,7 +7,6 @@ import os
 import shutil
 
 import config
-
 import networks.unet
 
 from numpy.random import seed
@@ -22,9 +21,7 @@ model = os.path.join(data_path, "model")
 if os.path.exists(model):
 	shutil.rmtree(model)
 os.mkdir(model)
-
 saved = os.path.join(data_path, "saved")
-
 if os.path.exists(saved):
 	shutil.rmtree(saved)
 os.mkdir(saved)
@@ -35,7 +32,6 @@ num_channels = config.num_channels
 classes = config.classes
 learning_rate = config.learning_rate
 weighted = config.weighted
-
 max_steps = config.max_steps
 
 train_path = os.path.join(data_path, img_dir_name)
@@ -44,6 +40,7 @@ anno_path = os.path.join(data_path, annotation_dir_name)
 f = open(os.path.join(data_path, 'loss.txt'), 'w')
 
 data = datasets.read_data_sets(train_path, anno_path, img_size)
+
 
 def weighted_loss(logits, labels, num_classes, head=None):
     """re-weighting"""
@@ -68,6 +65,7 @@ def weighted_loss(logits, labels, num_classes, head=None):
         loss = tf.add_n(tf.get_collection('losses'), name='total_loss')
     return loss
 
+
 def cal_loss(logits, labels):
     '''loss_weight = np.array([
         0.5,
@@ -88,14 +86,11 @@ def cal_loss(logits, labels):
 
 
 sess = tf.Session()
-
 x = tf.placeholder(tf.float32, shape=[None, None, None, num_channels], name='x')
 #y_true = tf.placeholder(tf.float32, shape=[None, img_size, img_size, classes], name='y_true')  # how to transform anno to 4-dimension image
 y_true = tf.placeholder(tf.int32, shape=[None, None, None], name='y_true')  # Sparse representation
 
-
 y_pred = networks.unet.create_unet(x)
-
 if weighted == "yes":
     cost_reg = cal_loss(y_pred, y_true)
 else:
@@ -106,9 +101,6 @@ else:
 
 
 y_pred = tf.argmax(y_pred, axis = 3, name="y_pred")
-
-
-
 tf.summary.scalar("loss", cost_reg)
 summ = tf.summary.merge_all()
 writer = tf.summary.FileWriter(os.path.join(data_path, 'summary'))
@@ -117,14 +109,15 @@ writer.add_graph(sess.graph)
 optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost_reg)
 
 total_iterations = 0
-
 saver = tf.train.Saver()
+
 
 def show_progress(epoch, feed_dict_train, i, cost):
     loss = sess.run(cost, feed_dict=feed_dict_train)
 
     msg = "Traing Epoch{0} --- iterations: {1}  --- Training loss: {2}"
     print(msg.format(epoch + 1, i, loss))
+
 
 def train(num_iteration):
     global total_iterations
@@ -135,13 +128,10 @@ def train(num_iteration):
         feed_dict_tr = {x: x_batch, y_true: y_true_batch}
         y_arr = sess.run(y_pred, feed_dict=feed_dict_tr)
         #print(np.max(y_arr))
-
         sess.run(optimizer, feed_dict=feed_dict_tr)
         loss = sess.run(cost_reg, feed_dict=feed_dict_tr)
-
         cont = str(np.max(y_arr)) + ": " + str(loss) + "\n"
         f.write(cont)
-
         epoch = int(i / int(data.data._num_examples / batch_size))
         show_progress(epoch, feed_dict_tr, i, cost_reg)
 
@@ -153,5 +143,3 @@ def train(num_iteration):
     total_iterations += num_iteration
 
 train(num_iteration = max_steps)
-
-

@@ -13,18 +13,20 @@ img_size = config.img_size
 def create_weights(shape):
     return tf.Variable(tf.truncated_normal(shape, stddev=0.05))
 
+
 def create_biases(size):
     return tf.Variable(tf.constant(0.05, shape=[size]))
+
 
 def conv_layer(input, num_input_channels, conv_filter_size, num_filters, padding='SAME', relu=True):
     weights = create_weights(shape=[conv_filter_size, conv_filter_size, num_input_channels, num_filters])
     biases = create_biases(num_filters)
     layer = tf.nn.conv2d(input=input, filter=weights, strides=[1, 1, 1, 1], padding=padding)
     layer += biases
-
     if relu:
         layer = tf.nn.relu(layer)
     return layer
+
 
 def pool_layer(input, padding='SAME'):
     return tf.nn.max_pool(value=input,
@@ -32,9 +34,8 @@ def pool_layer(input, padding='SAME'):
                           strides=[1, 2, 2, 1],
                           padding=padding)
 
+
 def un_conv(input, num_input_channels, conv_filter_size, num_filters, feature_map_size, train=True, padding='SAME',relu=True):
-
-
     weights = create_weights(shape=[conv_filter_size, conv_filter_size, num_filters, num_input_channels])
     biases = create_biases(num_filters)
     if train:
@@ -53,9 +54,7 @@ def un_conv(input, num_input_channels, conv_filter_size, num_filters, feature_ma
 
 
 def create_unet(input, train=True):
-
     # train is used for un_conv, to determine the batch size
-
     conv1 = conv_layer(input, 3, 3, 64)
     conv2 = conv_layer(conv1, 64, 3, 64)
     pool2 = pool_layer(conv2)
@@ -99,6 +98,7 @@ def create_unet(input, train=True):
 
     return conv23
 
+
 if __name__ == '__main__':
     oldtime = datetime.datetime.now()
     for i in range(16):
@@ -106,5 +106,4 @@ if __name__ == '__main__':
         y = create_unet(input, train=False)
         #print(y)
     newtime = datetime.datetime.now()
-
     print('the interval is：%s s' % (newtime - oldtime).seconds)

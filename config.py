@@ -3,16 +3,13 @@ import tensorflow as tf
 flags = tf.app.flags
 FlAGS = flags.FLAGS
 
-# about dataset information
-
+# about dataset informatio
 flags.DEFINE_string('data_path', './dataset/my_dataset', 'the directory of the datasets')
 flags.DEFINE_string('img_dir_name', 'images', 'the directory of the raw images')
 flags.DEFINE_string('annotation_dir_name', 'annosRaw', 'the directory of the annotation images')
 flags.DEFINE_string('train_list_file', 'train.txt', 'the .txt file to save the training images filename') # one line one name, not including the suffix name
 flags.DEFINE_string('trainval_list_file', 'trainval.txt', 'the .txt file to save the training and val images filename') # one line one name, not including the suffix name
 flags.DEFINE_string('suffix_name', '.png', 'the suffix name of training images') # one line one name, not including the suffix name
-
-
 
 # network parameter
 flags.DEFINE_integer('batch_size', 4, 'the training batch size')
@@ -24,7 +21,6 @@ flags.DEFINE_integer('classes', 4, 'the number of the classes, including the bac
 flags.DEFINE_float('learning_rate', 1e-4, 'the init learning rate')
 flags.DEFINE_integer('max_steps', 30000, 'the init learning rate')
 flags.DEFINE_string('weighted', "no", 'choose the model') # if weighted is yes, you need to config the loss_weight in the train.py file.
-
 
 
 # about dataset information
@@ -45,5 +41,3 @@ classes = FlAGS.classes
 learning_rate = FlAGS.learning_rate
 max_steps = FlAGS.max_steps
 weighted = FlAGS.weighted
-
-
